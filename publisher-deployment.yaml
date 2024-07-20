@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: publisher
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: publisher
+  template:
+    metadata:
+      labels:
+        app: publisher
+    spec:
+      containers:
+      - name: publisher
+        image: gcr.io/cicd-426201/publisher-app:v3
+        ports:
+        - containerPort: 5000
+        env:
+        - name: GCP_PROJECT_ID
+          value: "cicd-426201"
+        - name: DB_HOST
+          value: "34.132.125.37"
+        - name: DB_NAME
+          value: "appdb"
+        - name: DB_USER
+          value: "root"
+        - name: DB_PASS
+          value: "root"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: publisher
+spec:
+  type: LoadBalancer
+  selector:
+    app: publisher
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 5000
